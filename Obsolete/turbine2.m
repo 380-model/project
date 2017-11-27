@@ -133,7 +133,7 @@
 %% ---------- Added Penstock Pipe --------------
 
 y0 = [0,0,0,0,0]; % initial angular velocity = 0
-[t,y] = ode45(@turbine3, [0 100], y0);
+[t,y] = ode45(@turbine3, [0 5], y0);
 power = y(:,2) .* y(:,3);
 y = y / (2*pi) * 60; % convert to RPM
 figure
@@ -141,7 +141,7 @@ plot(t,y)
 hold on
 plot(t, power)
 title('Initial plot of Pelton Wheel Turbine')
-legend('Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Output current (A)','Shaft Power (W)','Penstock Flow Rate')
+legend('Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Output current (A)','Penstock Flow Rate','Shaft Power (W)')
 xlabel('Simulation time (s)')
 ylabel('Value')
 
@@ -150,10 +150,10 @@ Q = 5/1000; % (5 lps) this is the input, assume constant flow for now
 head = 50;
 mass_turb = 10;
 radius_turb = 0.15;
-a_jet = 0.002^2 * pi;
+% a_jet = 0.002^2 * pi;
 J_turb = 0.5 * mass_turb * radius_turb^2; % approximate as a disc
 b_turb = 0.2;
-jet_factor = 0.97; % to account for losses and such
+% jet_factor = 0.97; % to account for losses and such
 
 % Generator
 J_gen = 0.005; % less than the turbine
@@ -178,10 +178,32 @@ pipe_area = (pipe_diam/2)^2 * pi;
 Rf = (128 * 8.9E-4 * pipe_length) / (pi * pipe_diam^4);
 If = 2 * 1000 * pipe_length / pipe_area;
 
+% Water jet
+jet_diam = 0.015;
+jet_area = pi*(jet_diam/2)^2;
+beta = jet_diam/pipe_diam;
+jet_coefficient = 0.97;
 
-xprime(1,1) = (2000 * Q * radius_turb / J_turb)*(jet_factor * sqrt(2*9.8*(head - (Rf * Q)/(1000 *9.8))) - y(1)*radius_turb) - y(1)*b_turb/J_turb - y(3)/J_turb; % turbine speed
+% jet_velocity = sqrt(2*9.8*(head - (Rf * y(5)/(1000*9.8)) - (1/(2*9.8))*(1-beta^4)*(y(5)/(jet_coefficient*jet_area))^2))
+% xprime(1,1) = (2000 * y(5) * radius_turb / J_turb) * (jet_velocity - y(1)*radius_turb) - y(1)*b_turb/J_turb - y(3)/J_turb; % turbine speed
+% xprime(1,1) = (2000 * y(5) * radius_turb / J_turb)*(jet_coefficient * sqrt(2*9.8*(head - (Rf * Q)/(1000 *9.8))) - y(1)*radius_turb) - y(1)*b_turb/J_turb - y(3)/J_turb; % turbine speed
+
+xprime(1,1) = (2000 * Q * radius_turb / J_turb)*(jet_coefficient * sqrt(2*9.8*(head - (Rf * Q)/(1000 *9.8))) - y(1)*radius_turb) - y(1)*b_turb/J_turb - y(3)/J_turb; % turbine speed
 xprime(2,1) = (y(3) - y(2)*b_gen)/J_gen; % Generator speed
 xprime(3,1) = K * (-y(1) + y(2));  % shaft torque
 xprime(4,1) = (1/L_gen) * (k_emf * y(2) - R_gen*y(4) - R_load*y(4)); % Output current
-xprime(5,1) = (1000 * 9.8 * head - Rf*y(5)) / If; % flow rate through penstock ... values seem weird but the power output is right ??
+% xprime(5,1) = (1000 * 9.8 * head - Rf*y(5)) / If; % flow rate through penstock ... values seem weird but the power output is right ??
+
+pipe_diam = 0.0736;
+jet_diam = 0.015;
+jet_area = pi*(jet_diam/2)^2;
+beta = jet_diam/pipe_diam;
+jet_coefficient = 0.97;
+
+head = 50;
+pipe_length = 50*sin(45);
+pipe_area = (pipe_diam/2)^2 * pi;
+Rf = (128 * 8.9E-4 * pipe_length) / (pi * pipe_diam^4); 
+If = 2 * 1000 * pipe_length / pipe_area;
+xprime(5,1) = (1000 * 9.8 * head - Rf*y(5) - 0.5*1000*(1-beta^4)*(y(5)/(jet_coefficient*jet_area))^2)/If;
 end
