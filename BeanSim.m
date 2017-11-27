@@ -13,7 +13,7 @@ close all;
 % Capacitor: BEANS -> Q = CT * dT/dt
 % Convection from BEANS to AMBIENT -> deltaT = Rc * Q
 
-simulationTime = 24*3600; %s
+simulationTime = 48*3600; %s
 deltaTime = 0.01;
 iterations = simulationTime/deltaTime;
 
