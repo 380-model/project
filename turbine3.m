@@ -141,8 +141,8 @@ figure
 plot(t,y)
 hold on
 plot(t, power)
-title('Initial plot of Pelton Wheel Turbine')
-legend('Penstock Flow Rate','Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Output current (A)')
+title('Pelton Wheel Turbine')
+legend('Penstock Flow Rate (m^3/s)','Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Output current (A)')
 xlabel('Simulation time (s)')
 ylabel('Value')
 
