@@ -172,7 +172,7 @@ K = -785.3982;%calculate_k(G,d,l);
 % Penstock Pipe 
 head = 50;
 pipe_diam = 0.0736;
-pipe_length = 50*sin(45);
+pipe_length = 50/sin(45);
 pipe_area = (pipe_diam/2)^2 * pi;
 Rf = (128 * 8.9E-4 * pipe_length) / (pi * pipe_diam^4); 
 If = 2 * 1000 * pipe_length / pipe_area;
