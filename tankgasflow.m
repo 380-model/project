@@ -45,10 +45,10 @@ subplot(2,1,1)
 plot (t,y(:,1),'k','LineWidth',2)
 hold on
 grid on
-myxlabel=xlabel ('time [s]');
-myylabel=ylabel ('Flow Rate');
-set (myxlabel,'FontSize',12)
-set (myylabel,'FontSize',12)
+myxlabel=xlabel ('time [s]')
+myylabel=ylabel ('Flow Rate')
+set (myxlabel,'FontSize',12);
+set (myylabel,'FontSize',12);
 title('MSE 380 Assignment 1 - Q1 - y1')
 
 subplot(2,1,2)
