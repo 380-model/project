@@ -39,19 +39,18 @@ y0 = [0 0 0];
 
 Q = 5.4/1000;
 
- %[(-2*radius_turb^2*Q*1000+b_turb)/J_turb 0 -1/J_turb 0 0;
 a = [((-2*radius_turb^2*Q*1000)/J_turb - b_turb/J_turb) 0 -1/J_turb 0 0;
     0 -b_gen/J_gen 1/J_gen 0 0;
     -K K 0 0 0;
-    0 k_emf/sqrt(2)/L_gen 0 -(R_gen)/L_gen -1/L_gen
-    0 0 0 1/C_gen -1/(R_load * C_gen)];
+    0 k_emf/sqrt(2)/L_gen 0 -1/(L_gen) 1/(L_gen * R_load)
+    0 0 0 1/C_gen -1/(R_gen * C_gen)];
 
 % todo: adjust R_load based on requirements of electrolyzer
 
 b = [2000*radius_turb*Q*jet_coefficient*sqrt(2*9.8*head)/J_turb; 
     0 
     0 
-    -1.4/L_gen
+    -1.4/L_gen/R_load
     0];
 
 
