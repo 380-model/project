@@ -200,14 +200,14 @@
 y0 = [0,0,0,0,0,0]; % initial angular velocity = 0
 [t,y] = ode45(@turbine4, [0 15], y0);
 power = y(:,3) .* y(:,4);
-y(:,2) = y(:,2) / (2*pi) * 60;  % convert to RPM
-y(:,3) = y(:,3) / (2*pi) * 60;  % convert to RPM
+% y(:,2) = y(:,2) / (2*pi) * 60;  % convert to RPM
+% y(:,3) = y(:,3) / (2*pi) * 60;  % convert to RPM
 figure
 plot(t,y)
 hold on
 plot(t, power)
 title('Pelton Wheel Turbine')
-legend('Penstock Flow Rate (m^3/s)','Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Output current (A)', 'Rectifier Voltage','Output Electrical Power')
+legend('Penstock Flow Rate (m^3/s)','Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Inductor current (A)', 'Rectifier Voltage (V)','Output Electrical Power')
 xlabel('Simulation time (s)')
 ylabel('Value')
 
@@ -221,11 +221,10 @@ b_turb = 0.2;
 % Generator
 J_gen = 0.005; % less than the turbine
 k_emf = 0.699; % emf constant from DC-540 generator
-k_gen = 0.999;% motor (generator constant for DC-540 generator)
 L_gen = 0.315;
 R_gen = 0.27; %http://forums.pelicanparts.com/porsche-911-technical-forum/199928-alternator-stator-coil-resistance.html
 b_gen = 0.35;
-R_load = 10;
+R_load = 40.7;
 C_gen = 0.005;
 
 % Shaft parameters
@@ -255,7 +254,7 @@ xprime(1,1) = (1000 * 9.8 * head - Rf*y(1) - 0.5*1000*(1-beta^4)*(y(1)/(jet_coef
 xprime(2,1) = (2000 * y(1) * radius_turb / J_turb)*(jet_coefficient * jet_velocity - y(2)*radius_turb) - y(2)*b_turb/J_turb - y(4)/J_turb; % turbine speed
 xprime(3,1) = (y(4) - y(3)*b_gen)/J_gen; % Generator speed
 xprime(4,1) = K * (-y(2) + y(3));  % shaft torque
-xprime(5,1) = (k_emf*y(3)/sqrt(2) - R_gen*y(5) - 1.4 - y(6))/L_gen;
-xprime(6,1) = (y(5) - y(6)/R_load)/C_gen;
+xprime(5,1) = (k_emf*y(3)/sqrt(2) - R_gen*y(5) - 1.4 - y(6))/L_gen; % inductor current
+xprime(6,1) = (y(5) - y(6)/R_load)/C_gen; % output voltage
 
 end
