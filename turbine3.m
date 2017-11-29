@@ -1,18 +1,12 @@
 %% ---------- Added Rectifier Circuit --------------
 
-y0 = [0,0,0,0,0,0]; % initial angular velocity = 0
+y0 = [0,0,0,0,0,0,0]; % initial angular velocity = 0
 [t,y] = ode45(@turbine4, [0 60], y0);
 power = y(:,3) .* y(:,4);
 y(:,2) = y(:,2) / (2*pi) * 60;  % convert to RPM
 y(:,3) = y(:,3) / (2*pi) * 60;  % convert to RPM
 
-R_cell = 40.7
-% Initial volume of H2 produced
-% VH2 = y(:,6).* (R_cell^2 / 285000) .* (8.314*(273.15 + 25))/100000; % volume at each step
-VH2 = y(:,6) .* ((1.29*40.7*8.314*298.15)/(285000*101300)) % volume at each step
-
 VH2 = cumsum(VH2); % essentially integrate
-
 
 figure
 plot(t,y)
@@ -68,6 +62,9 @@ xprime(3,1) = (y(4) - y(3)*b_gen)/J_gen; % Generator speed
 xprime(4,1) = K * (-y(2) + y(3));  % shaft torque
 xprime(5,1) = (k_emf*y(3)/sqrt(2) - (y(5) - (y(6)-1.4)/R_load)) / L_gen; % inductor current
 xprime(6,1) = (y(5) - y(6)/R_gen)/C_gen; % output voltage
+
+xprime(7,1) = y(5) * y(6) * 8.314 * 298 /285000 /101300; % volume of H2
+xprime(8,1) = y(5) * y(6) * 8.314 * 298 /285000 /101300 /2; % volume of O2
 
 % xprime(5,1) = (k_emf*y(3)/sqrt(2) - (y(6)/R_load + y(5))*R_load)/L_gen;
 % xprime(6,1) = (k_emf*y(3)/sqrt(2)/R_gen - y(5))/C_gen;

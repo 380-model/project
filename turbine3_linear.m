@@ -63,8 +63,8 @@ c = [1 0 0 0 0
 d = 0;
 
 sys = ss(a, b, c, d);
-dt = 0.0001;
-t = 0:dt:10;
+dt = 0.001;
+t = 0:dt:360;
 u = ones(length(t), 1);
 
 simresult = lsim(sys, u, t);
@@ -72,3 +72,9 @@ plot(t,simresult)
 legend('Turbine Shaft Rad/s', 'Generator Shaft Rad/s', 'Shaft Torque (N*m)','Output Current', 'Output Voltage');
 xlabel('Time (s)')
 
+% Calculate volume of H2 produced at each time step
+H2 = simresult(:,5) .* simresult(:,4) * (dt /285000 * 8.314 * 298.15 / 101300);
+% Integrate
+H2 = cumsum(H2);
+fprintf('Total volume of H2 produced in %d seconds: %d m^3\r\n',t(end),H2(end))
+fprintf('Total volume of O2 produced in %d seconds: %d m^3\r\n',t(end),H2(end)/2)
