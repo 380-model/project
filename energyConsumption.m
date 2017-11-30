@@ -71,7 +71,7 @@ resDensity = 2400;              % [kg/m3]
 resHeatCapacity = 1085          % [kJ/kgC]
 resBaseArea = ((canD/2 + resThickness)^2 - (canD/2)^2)*pi;
 resVolume = resBaseArea * canHeaterAreaRatio * canH;
-resSurfaceArea = 2 * resBaseArea + (pi * (canD/2 + resThickness)^2) * canHeaterAreaRatio * canH;
+resSurfaceArea = 2 * resBaseArea + canHeaterAreaRatio * canH;
 
 C_TR = resVolume * resDensity * resHeatCapacity;        % [J/C]
 
