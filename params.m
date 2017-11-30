@@ -20,8 +20,8 @@ a.C_gen = 0.005;
 
 % Shaft parameters
 a.G = 80E9; % stainless steel
-a.d = 1/100; % 1cm
-a.l = 0.1; % 10cm
+a.d = 1/100; % diameter: 1cm
+a.l = 0.10; % length: 10cm
 calculate_k = @(G, d, l) -(((pi * d^4)/32)*G)/l;
 a.K = calculate_k(a.G,a.d,a.l);
 

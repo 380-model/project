@@ -35,14 +35,17 @@ ICO = [QO
   
 %%  Fuel Cell Constants
 T = 343;                % 70C
-Rc = 0.0028959;            % Ohms
+Rc = 0.0003;            % Ohms
 A = 430;                % [cm^2]
 t = 0.000178;           % [m]
 n = 100;                % number of cells
 psi = 14;               % saturated
 i_max = 2;              % max current density [A/cm2]
 i = 1.5;                % Current Pull [A/cm2]
-
+%   Can
+canD = 0.0682625;               % [m]
+canH = 0.123825;                % [m]
+canT = 0.00025;                 % [m]
 %%  Heating Beans State Model Constants
 
 %   Heater Resistance
@@ -52,13 +55,10 @@ R = 1;                  % [IDK]
 beanVolume = 400/1000000;       % [m^3] - 400mL
 beanDensity = 1082.05;             % [kg/m^3] - Water
 beanSpecificHeat = 4184;        % [J/(kg*K)] - Water
-beanSurfaceArea = pi*(canD/2)^2);
+beanSurfaceArea = pi*(canD/2)^2;
 C_TB = beanVolume * beanDensity * beanSpecificHeat;
 
-%   Can
-canD = 0.0682625;               % [m]
-canH = 0.123825;                % [m]
-canT = 0.00025;                 % [m]
+
 
 %   Resistor to Beans [Conduction]
 canArea = pi * canD * canH;
