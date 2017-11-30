@@ -1,6 +1,11 @@
-function [yH, yO, yB] = energyConsumptionLinear(P_O0, P_H0)
+function [yH, yO, yB] = energyConsumptionLinear(P_O0, P_H0, dt, maxtime)
 % P_O0 = 2.8;       % [atm]
 % P_H0 = 3;       % [atm]
+
+%%  Define Run Time
+time = 0:dt:maxtime;
+uH = zeros(length(time), 1);
+uO = zeros(length(time), 1);
 
 %%  Model Parameter Constants
 %%  Tank Gas Flow Model
@@ -10,7 +15,7 @@ IfH = 50;        % [kg/m^4]
 VH = 0.04;       % [m^3]
 kH = 1.405;      % unitless
 PH = P_H0/4;     % [atm]
-CfH = VH/(PH*kH) % [m^3/atm]
+CfH = VH/(PH*kH); % [m^3/atm]
 QH = 0;          % [J]
 
 ICH = [QH
@@ -22,7 +27,7 @@ IfO = 50;        % [kg/m^4]
 VO = 0.04;       % [m^3]
 kO = 1.405;      % unitless
 PO = P_O0/4;     % [atm]
-CfO = VO/(PO*kO) % [m^3/atm]
+CfO = VO/(PO*kO); % [m^3/atm]
 QO = 0;          % [J]
 
 ICO = [QO
@@ -127,11 +132,7 @@ DB = [0 0
 
 sysB = ss(AB, BB, CB, DB);
 
-%%  Define Run Time
-dt = 0.01;
-time = 0:dt:360;
-uH = zeros(length(time), 1);
-uO = zeros(length(time), 1);
+%%  Run Simulation
 
 yH = lsim(sysH, uH, time, ICH);
 yO = lsim(sysO, uO, time, ICO);

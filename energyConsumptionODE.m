@@ -1,6 +1,9 @@
-function [yH, yO, yB] = energyConsumptionODE(P_O0, P_H0)
+function [yH, yO, yB] = energyConsumptionODE(P_O0, P_H0, dt, maxtime)
 % P_O0 = 2.8;       % [atm]
 % P_H0 = 3;       % [atm]
+
+%%  Define Run Time
+time = 0:dt:maxtime;
 
 %%  Model Parameter Constants
 %%  Tank Gas Flow Model
@@ -87,19 +90,11 @@ DB = [0 0
 
 sysB = ss(AB, BB, CB, DB);
 
-%%  Define Run Time
-dt = 0.01;
-time = 0:dt:360;
-uH = zeros(length(time), 1);
-uO = zeros(length(time), 1);
-
-%%  Define Hydrogen State Space Matrix
-
- 
-%%  Define Hydrogen State Space Matrix
+%%  Run Simulation
 
 [tH, yH] = ode45(@ODEfunctionH, time, ICH); 
 [tO, yO] = ode45(@ODEfunctionO, time, ICO);
+
 for w = 1:length(time)
     PO2 = yO(w,2);
     PH2 = yH(w,2);
