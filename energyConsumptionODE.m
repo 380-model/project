@@ -1,28 +1,17 @@
-function [yH, yO, yB] = energyConsumptionLinear(P_O0, P_H0)
+function [yH, yO, yB] = energyConsumptionODE(P_O0, P_H0)
 % P_O0 = 2.8;       % [atm]
 % P_H0 = 3;       % [atm]
 
 %%  Model Parameter Constants
 %%  Tank Gas Flow Model
 %   Hydrogen
-RfH = 7000;      % [Ns/m^5]
-IfH = 50;        % [kg/m^4]
-VH = 0.04;       % [m^3]
-kH = 1.405;      % unitless
-PH = P_H0/4;     % [atm]
-CfH = VH/(PH*kH) % [m^3/atm]
 QH = 0;          % [J]
 
 ICH = [QH
        P_H0];  
   
 %   Oxygen
-RfO = 7000;      % [Ns/m^5]
-IfO = 50;        % [kg/m^4]
-VO = 0.04;       % [m^3]
-kO = 1.405;      % unitless
-PO = P_O0/4;     % [atm]
-CfO = VO/(PO*kO) % [m^3/atm]
+
 QO = 0;          % [J]
 
 ICO = [QO
@@ -82,36 +71,7 @@ T_A = 20;               % [C]
 ICB = [T_A
        T_A];
 
-%%  Define Hydrogen State Space Matrix
-AH = [-RfH/IfH     1/IfH
-     -1/CfH      0   ];
- 
-BH = [0
-      0];
-  
-CH = [1 0
-      0 1];
- 
-DH = [0
-      0];
-  
-sysH = ss(AH, BH, CH, DH);
- 
-%%  Define Hydrogen State Space Matrix
-AO = [-RfO/IfO     1/IfO
-      -1/CfO       0    ];
- 
-BO = [0
-      0];
-  
-CO = [1 0
-      0 1];
- 
-DO = [0
-      0];
-  
- sysO = ss(AO, BO, CO, DO);
- 
+
 %%  Define Bean Heater State Space Matrix
 AB = [-(1/Rk_RB + 1/Rc_RA)/C_TR   1/(Rk_RB * C_TR)      
       1/(Rk_RB * C_TB)           -(1/Rk_RB + 1/Rc_BA)/C_TB];
@@ -133,9 +93,13 @@ time = 0:dt:360;
 uH = zeros(length(time), 1);
 uO = zeros(length(time), 1);
 
-yH = lsim(sysH, uH, time, ICH);
-yO = lsim(sysO, uO, time, ICO);
+%%  Define Hydrogen State Space Matrix
 
+ 
+%%  Define Hydrogen State Space Matrix
+
+[tH, yH] = ode45(@ODEfunctionH, time, ICH); 
+[tO, yO] = ode45(@ODEfunctionO, time, ICO);
 for w = 1:length(time)
     PO2 = yO(w,2);
     PH2 = yH(w,2);
@@ -210,3 +174,25 @@ xlabel('Time [s]');
 ylabel('Temperature [C]');
 grid on
 end
+function dvariables = ODEfunctionH(t, y)
+   RfH = 7000;      % [Ns/m^5]
+    IfH = 50;        % [kg/m^4]
+    VH = 0.04;       % [m^3]
+    kH = 1.405;      % unitless
+
+    dvariables = zeros(2,1);
+    dvariables(1) = -(RfH*y(1)/IfH) + y(2)/IfH;
+    dvariables(2) = -y(1)*kH*y(2)/VH;
+end 
+
+function dvariables = ODEfunctionO(t, y)
+    RfO = 7000;      % [Ns/m^5]
+    IfO = 50;        % [kg/m^4]
+    VO = 0.04;       % [m^3]
+    kO = 1.405;      % unitless
+
+    dvariables = zeros(2,1);
+    dvariables(1) = -(RfO*y(1)/IfO) + y(2)/IfO;
+    dvariables(2) = -y(1)*kO*y(2)/VO;
+end 
+
