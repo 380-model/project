@@ -9,18 +9,19 @@ y(:,2) = y(:,2) / (2*pi) * 60;  % convert to RPM
 y(:,3) = y(:,3) / (2*pi) * 60;  % convert to RPM
 
 %% Plotting 
-figure('NumberTitle', 'off', 'Name', 'Nonlinear Generation Results')
-plot(t,y(:,2),t,y(:,3),t,y(:,4),t,y(:,5),t,y(:,6))
-hold on
-plot(t, shaft_power)
-plot(t, electrical_power)
-title('Pelton Wheel Turbine')
-legend('Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Inductor current (A)', 'Rectifier Voltage (V)','Shaft Power (W)','Electrical Power (W)')
-xlabel('Simulation time (s)')
-ylabel('Value')
+% figure('NumberTitle', 'off', 'Name', 'Nonlinear Generation Results')
+% plot(t,y(:,2),t,y(:,3),t,y(:,4),t,y(:,5),t,y(:,6))
+% hold on
+% plot(t, shaft_power)
+% plot(t, electrical_power)
+% title('Pelton Wheel Turbine')
+% legend('Turbine RPM','Generator RPM','Shaft Torque (N*m)', 'Inductor current (A)', 'Rectifier Voltage (V)','Shaft Power (W)','Electrical Power (W)')
+% xlabel('Simulation time (s)')
+% ylabel('Value')
 
 % Plot of Flow rate
-figure
+figure('NumberTitle', 'off', 'Name', 'Nonlinear Generation Results')
+
 subplot(2,2,1)
 plot(t,y(:,1))
 title('Penstock Flow Rate')
@@ -52,7 +53,7 @@ ylabel('Value')
 legend('Turbine Speed (RPM)','Generator Speed (RPM)','Shaft Torque (N*m)')
 
 %% Prints
-disp('------------ LINEAR MODEL -----------------')
+disp('------------ NONLINEAR MODEL -----------------')
 fprintf('Average shaft power: %f W\r\n',mean(shaft_power))
 fprintf('Average electrical power: %f W\r\n',mean(electrical_power))
 fprintf('Generator efficiency: %f percent\r\n',mean(electrical_power)/mean(shaft_power)*100)

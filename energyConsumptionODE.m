@@ -139,7 +139,7 @@ end
 %%  Bean Simulator
 yB = lsim(sysB, uB, time, ICB);
 
-figure(1)
+figure('NumberTitle', 'off', 'Name', 'Nonlinear Consumption Results')
 
 subplot(2,2,1)
 plot(time(1,:),yH(:,2))
