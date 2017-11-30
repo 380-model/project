@@ -79,6 +79,14 @@ A = [-(1/Rk_RB + 1/Rc_RA)/C_TR   1/(Rk_RB * C_TR)
 B = [1/(Rc_RA * C_TR)    1/(C_TR)
      1/(Rc_BA * C_TB)    0       ];
 
+C = [1  0
+     0  1];
+ 
+D = [0  0
+     0  0];
+ 
+sys = ss(A, B, C, D);
+
 T_R = T_A;
 T_B = T_A;
 

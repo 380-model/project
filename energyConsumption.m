@@ -1,50 +1,50 @@
 clear all;
-P_O0 = 2.8;     % [atm]
+P_O0 = 2.8;       % [atm]
 P_H0 = 3;       % [atm]
 
 %%  Model Parameter Constants
 %%  Tank Gas Flow Model
 %   Hydrogen
-RfH = 7;
-IfH = 5;
-VH = 5;
-kH = 1.405;
-PH = P_H0/2;
-CfH = VH/(PH*kH)
-QH = 0;
+RfH = 7000;        % [IDK]
+IfH = 50;        % [IDK]
+VH = 20;         % [m^3]
+kH = 1.405;     % unitless
+PH = P_H0/4;    % [atm]
+CfH = VH/(PH*kH)% [IDK]
+QH = 0;         % [J]
 
 ICH = [QH
        P_H0];  
   
 %   Oxygen
-RfO = 7;
-IfO = 5;
-VO = 5;
-kO = 1.405;
-PO = P_O0/2;
-CfO = VO/(PO*kO)
-QO = 0;
+RfO = 7000;        % [IDK]
+IfO = 50;        % [IDK]
+VO = 20;         % [m^3]
+kO = 1.405;     % unitless
+PO = P_O0/4;    % [atm]
+CfO = VO/(PO*kO)% [IDK]
+QO = 0;         % [J]
 
 ICO = [QO
        P_O0]; 
   
 %%  Fuel Cell Constants
-T = 343;                %70C
-Rc = 0.0003;            %Ohms
-A = 430;                %[cm^2]
-t = 0.000178;           %[m]
-n = 100;                  %number of cells
-psi = 13;               %saturated
-i_max = 2;              %max current density [A/cm2]
-i = 1.5;
+T = 343;                % 70C
+Rc = 0.0003;            % Ohms
+A = 430;                % [cm^2]
+t = 0.000178;           % [m]
+n = 800;                % number of cells
+psi = 13;               % saturated
+i_max = 2;              % max current density [A/cm2]
+i = 1.5;                % Current Pull [A/cm2]
 
 %%  Heating Beans State Model Constants
 
 %   Heater Resistance
-R = 1;
+R = 1;                  % [IDK]
 
 %   Beans
-beanVolume = 400/1000;          % [m^3] - 400mL
+beanVolume = 400/1000000;       % [m^3] - 400mL
 beanDensity = 1000;             % [kg/m^3] - Water
 beanSpecificHeat = 4184;        % [J/(kg*K)] - Water
 C_TB = beanVolume * beanDensity * beanSpecificHeat;
@@ -55,7 +55,7 @@ canH = 0.123825;                % [m]
 canT = 0.00025;                 % [m]
 
 %   Resistor
-C_TR = 100; %IDK
+C_TR = 100;                     % [IDK]
 
 %   Resistor to Beans [Conduction]
 canArea = pi * canD * canH;
@@ -77,7 +77,10 @@ A_BA = pi * ((canD/2) - canT)^2;
 Rc_BA = 1/(hc_BA * A_BA);
 
 % Ambient Temperature
-T_A = 20;
+T_A = 20;               % [C]
+
+ICB = [T_A
+       T_A];
 
 %%  Define Hydrogen State Space Matrix
 AH = [-RfH/IfH     1/IfH
@@ -116,11 +119,11 @@ AB = [-(1/Rk_RB + 1/Rc_RA)/C_TR   1/(Rk_RB * C_TR)
 BB = [1/(Rc_RA * C_TR)    1/(C_TR)
       1/(Rc_BA * C_TB)    0       ];
   
-CB = [0 0
-      0 0];
-  
-DB = [1 0
+CB = [1 0
       0 1];
+  
+DB = [0 0
+      0 0];
 
 sysB = ss(AB, BB, CB, DB);
 
@@ -161,32 +164,48 @@ for w = 1:length(time)
          (log(PH2)+0.5*log(PO2));
 
     %%  Stack Voltage
-    uB(w,1) = dt*((n*(Vn - Vk - Vo - Vt))^2)/R;
-    uB(w,2) = T_A;
+    z(w,1) = Vn;
+    z(w,2) = Vk;
+    z(w,3) = Vo;
+    z(w,4) = Vt;
+    if(n*(Vn - Vk - Vo - Vt) > 0)
+        uB(w,2) = dt*((n*(Vn - Vk - Vo - Vt))^2)/R;
+    else
+        uB(w,2) = 0;
+    end
+    uB(w,1) = T_A;
+
 end
 
 %%  Bean Simulator
-yB = lsim(sysB, uB, time);
+yB = lsim(sysB, uB, time, ICB);
 
 figure(1)
 
-subplot(2,3,1)
+subplot(2,2,1)
 plot(time(1,:),yH(:,2))
 title('Hydrogen Tank Pressure')
 xlabel('Time [s]');
 ylabel('Pressure [atm]');
 grid on
 
-subplot(2,3,2)
+subplot(2,2,2)
 plot(time(1,:),yO(:,2))
 title('Oxygen Tank Pressure')
 xlabel('Time [s]');
 ylabel('Pressure [atm]');
 grid on
 
-subplot(2,3,3)
-plot(time(1,:),yB(:,1))
+subplot(2,2,3)
+plot(time(1,:),yB(:,2))
 title('Bean Temperature')
 xlabel('Time [s]');
 ylabel('Bean Temperature [C]');
+grid on
+
+subplot(2,2,4)
+plot(time(1,:),yB(:,1))
+title('Resistor Temperature')
+xlabel('Time [s]');
+ylabel('Temperature [C]');
 grid on
