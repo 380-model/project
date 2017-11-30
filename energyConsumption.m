@@ -10,22 +10,22 @@ uO = zeros(length(time), 1);
 %%  Model Parameter Constants
 %%  Tank Gas Flow Model
 %   Hydrogen
-RfH = 7000;      % [Ns/m^5]
-IfH = 50;        % [kg/m^4]
+RfH = 5002.51;   % [atm s/m^3]
+IfH = 107856;    % [kg/m^4]
 VH = 0.04;       % [m^3]
 kH = 1.405;      % unitless
 PH = P_H0/4;     % [atm]
-CfH = VH/(PH*kH); % [m^3/atm]
+CfH = VH/(PH*kH);% [m^3/atm]
 QH = 0;          % [J]
 
 ICH = [QH
        P_H0];  
   
 %   Oxygen
-RfO = 7000;      % [Ns/m^5]
-IfO = 50;        % [kg/m^4]
+RfO = 11596.4;   % [atm s/m^3]
+IfO = 1714800;   % [kg/m^4]
 VO = 0.04;       % [m^3]
-kO = 1.405;      % unitless
+kO = 1.395;      % unitless
 PO = P_O0/4;     % [atm]
 CfO = VO/(PO*kO); % [m^3/atm]
 QO = 0;          % [J]

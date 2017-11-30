@@ -170,8 +170,8 @@ ylabel('Temperature [C]');
 grid on
 end
 function dvariables = ODEfunctionH(t, y)
-   RfH = 7000;      % [Ns/m^5]
-    IfH = 50;        % [kg/m^4]
+    RfH = 5002.51;   % [atm s/m^3]
+    IfH = 107856;    % [kg/m^4]
     VH = 0.04;       % [m^3]
     kH = 1.405;      % unitless
 
@@ -181,10 +181,10 @@ function dvariables = ODEfunctionH(t, y)
 end 
 
 function dvariables = ODEfunctionO(t, y)
-    RfO = 7000;      % [Ns/m^5]
-    IfO = 50;        % [kg/m^4]
+    RfO = 11596.74;   % [atm s/m^3]
+    IfO = 1714800;   % [kg/m^4]
     VO = 0.04;       % [m^3]
-    kO = 1.405;      % unitless
+    kO = 1.395;      % unitless
 
     dvariables = zeros(2,1);
     dvariables(1) = -(RfO*y(1)/IfO) + y(2)/IfO;
