@@ -1,8 +1,9 @@
-clear all
+function [ t, y, moles_H2, moles_O2, p_H2, p_O2 ] = simulate_generation_linear(simulation_time, a )
+%SIMULATE_GENERATION_LINEAR Summary of this function goes here
+%   Detailed explanation goes here
+
 %% Setup Variables
-a = params(); % bring in parameters from the file
 volume = a.volume; % 20 L tanks (each gas)
-mass_turb = a.mass_turb;
 radius_turb = a.radius_turb;
 J_turb = a.J_turb; 
 b_turb = a.b_turb;
@@ -13,18 +14,8 @@ R_gen = a.R_gen;
 b_gen = a.b_gen;
 R_load = a.R_load;
 C_gen = a.C_gen;
-G = a.G; % stainless steel
-l = a.l; % 10cm
 K = a.K;
 head = a.head;
-pipe_diam = a.pipe_diam;
-pipe_length = a.pipe_length;
-pipe_area = a.pipe_area;
-Rf = a.Rf; 
-If = a.If;
-jet_diam = a.jet_diam;
-jet_area = a.jet_area;
-beta = a.beta;
 jet_coefficient = a.jet_coefficient;
 Q = a.Q_static; % flow rate. From steady state flow rate determined using nonlinear model. 
 
@@ -54,12 +45,14 @@ D = 0;
 %% Simulate the System
 sys = ss(A, B, C, D);
 dt = 0.001;
-t = 0:dt:15;
+t = 0:dt:simulation_time;
 u = ones(length(t), 1);
 
 y = lsim(sys, u, t);
 
+figure
 plot(t,y)
+title('Data - Linear Generation Model')
 legend('Turbine Shaft Rad/s', 'Generator Shaft Rad/s', 'Shaft Torque (N*m)','Output Current', 'Output Voltage');
 xlabel('Time (s)')
 
@@ -102,8 +95,13 @@ legend('Turbine Speed (RPM)','Generator Speed (RPM)','Shaft Torque (N*m)')
 %% Prints
 shaft_power = y(:,2) .* y(:,3);
 electrical_power = y(:,4) .* y(:,5);
+disp('------------ LINEAR MODEL -----------------')
 fprintf('Average shaft power: %f W\r\n',mean(shaft_power))
 fprintf('Average electrical power: %f W\r\n',mean(electrical_power))
 fprintf('Generator efficiency: %f percent\r\n',mean(electrical_power)/mean(shaft_power)*100)
 fprintf('Total moles of H2 produced in %d seconds: %d \r\n',t(end),moles_H2(end))
 fprintf('Total moles of O2 produced in %d seconds: %d \r\n',t(end),moles_O2(end))
+
+
+end
+
