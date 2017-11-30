@@ -1,1 +1,6 @@
-Vh2 = 1.29^2 * 15 * 8.314 * 298.15 / (40.7 * 285000 * 101.325)
+params = myparams();
+
+myfun(params)
+function x = myfun(params)
+display(params.thingy)
+end
