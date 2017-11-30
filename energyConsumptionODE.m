@@ -22,11 +22,11 @@ ICO = [QO
   
 %%  Fuel Cell Constants
 T = 343;                % 70C
-Rc = 0.0003;            % Ohms
+Rc = 0.0028959;            % Ohms
 A = 430;                % [cm^2]
 t = 0.000178;           % [m]
 n = 100;                % number of cells
-psi = 13;               % saturated
+psi = 14;               % saturated
 i_max = 2;              % max current density [A/cm2]
 i = 1.5;                % Current Pull [A/cm2]
 

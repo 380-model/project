@@ -27,7 +27,7 @@ IfO = 1714800;   % [kg/m^4]
 VO = 0.04;       % [m^3]
 kO = 1.395;      % unitless
 PO = P_O0/4;     % [atm]
-CfO = VO/(PO*kO); % [m^3/atm]
+CfO = VO/(PO*kO);% [m^3/atm]
 QO = 0;          % [J]
 
 ICO = [QO
@@ -35,11 +35,11 @@ ICO = [QO
   
 %%  Fuel Cell Constants
 T = 343;                % 70C
-Rc = 0.0003;            % Ohms
+Rc = 0.0028959;            % Ohms
 A = 430;                % [cm^2]
 t = 0.000178;           % [m]
 n = 100;                % number of cells
-psi = 13;               % saturated
+psi = 14;               % saturated
 i_max = 2;              % max current density [A/cm2]
 i = 1.5;                % Current Pull [A/cm2]
 
