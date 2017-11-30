@@ -1,4 +1,4 @@
-function [  ] = plot_generation_nonlin( t,y,p_H2, p_O2 )
+function [  ] = plot_generation_nonlin( t,y )
 %PLOT_GENERATION_NONLIN Summary of this function goes here
 %   Detailed explanation goes here
 %% Unit conversion
@@ -9,7 +9,7 @@ y(:,2) = y(:,2) / (2*pi) * 60;  % convert to RPM
 y(:,3) = y(:,3) / (2*pi) * 60;  % convert to RPM
 
 %% Plotting 
-figure
+figure('NumberTitle', 'off', 'Name', 'Nonlinear Generation Results')
 plot(t,y(:,2),t,y(:,3),t,y(:,4),t,y(:,5),t,y(:,6))
 hold on
 plot(t, shaft_power)

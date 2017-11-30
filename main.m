@@ -8,14 +8,17 @@
 clear all; close all;
 addpath('nonlinear', 'linear')
 params = params(); % these are global parameters used across various models. Change in params.m
-simulation_time = 15;
+generation_time = 60; % time to generate energy
 
 %% Nonlinear Model
 y0 = [0,0,0,0,0,0,0,0];
-[t_nonlin,y_nonlin] = ode45(@(t,y) simulate_generation_nonlin(t,y,params), [0 simulation_time], y0);
-[p_H2, p_O2] = gaspressure_nonlin(y_nonlin,params); 
-plot_generation_nonlin(t_nonlin,y_nonlin,p_H2,p_O2);
+[t_nonlin,y_nonlin] = ode45(@(t,y) simulate_generation_nonlin(t,y,params), [0 generation_time], y0); % Simulate energy generation + storage 
+[p_H2_nonlin, p_O2_nonlin] = gaspressure_nonlin(y_nonlin,params); 
+plot_generation_nonlin(t_nonlin,y_nonlin);
+
+energyConsumptionODE(p_O2_nonlin, p_H2_nonlin) % simulate energy consumption side
 
 %% Linear Model
-[ t_lin, y_lin, moles_H2, moles_O2, p_H2, p_O2 ] = simulate_generation_linear(simulation_time,params);
+[ t_lin, y_lin, moles_H2_lin, moles_O2_lin, p_H2_lin, p_O2_lin ] = simulate_generation_linear(generation_time,params);
+energyConsumption(p_O2_lin, p_H2_lin)
 

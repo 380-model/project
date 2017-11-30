@@ -50,7 +50,7 @@ R = 1;                  % [IDK]
 
 %   Beans
 beanVolume = 400/1000000;       % [m^3] - 400mL
-beanDensity = 1000;             % [kg/m^3] - Water
+beanDensity = 1082.05;             % [kg/m^3] - Water
 beanSpecificHeat = 4184;        % [J/(kg*K)] - Water
 C_TB = beanVolume * beanDensity * beanSpecificHeat;
 
@@ -60,7 +60,7 @@ canH = 0.123825;                % [m]
 canT = 0.00025;                 % [m]
 
 %   Resistor
-C_TR = 100;                     % [IDK]
+C_TR = 5989.85;                     % [IDK]
 
 %   Resistor to Beans [Conduction]
 canArea = pi * canD * canH;

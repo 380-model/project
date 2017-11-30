@@ -50,7 +50,7 @@ u = ones(length(t), 1);
 
 y = lsim(sys, u, t);
 
-figure
+figure('NumberTitle', 'off', 'Name', 'Linear Generation Results')
 plot(t,y)
 title('Data - Linear Generation Model')
 legend('Turbine Shaft Rad/s', 'Generator Shaft Rad/s', 'Shaft Torque (N*m)','Output Current', 'Output Voltage');
@@ -63,8 +63,8 @@ moles_O2 = y(:,5) .* y(:,4) * (dt /285000 * 8.314 * 298.15 /2 /101300 * 1.429 / 
 moles_H2 = cumsum(moles_H2); % integrate
 moles_O2 = cumsum(moles_O2);
 
-p_H2 = moles_H2(end) * 8.314 * 298.15 / volume; % pascals
-p_O2 = moles_O2(end) * 8.314 * 298.15 / volume; % pascals
+p_H2 = moles_H2(end) * 8.314 * 298.15 / volume /101300; % bar
+p_O2 = moles_O2(end) * 8.314 * 298.15 / volume /101300; % bar
 
 
 %% Plot the result
