@@ -37,8 +37,9 @@ R = 1;                  % [IDK]
 
 %   Beans
 beanVolume = 400/1000000;       % [m^3] - 400mL
-beanDensity = 1000;             % [kg/m^3] - Water
+beanDensity = 1082.05;             % [kg/m^3] - Water
 beanSpecificHeat = 4184;        % [J/(kg*K)] - Water
+beanSurfaceArea = pi*(canD/2)^2);
 C_TB = beanVolume * beanDensity * beanSpecificHeat;
 
 %   Can
@@ -46,34 +47,39 @@ canD = 0.0682625;               % [m]
 canH = 0.123825;                % [m]
 canT = 0.00025;                 % [m]
 
-%   Resistor
-C_TR = 100;                     % [IDK]
-
 %   Resistor to Beans [Conduction]
 canArea = pi * canD * canH;
 canHeaterAreaRatio = 0.5; % Amount of the can covered by the heater
 canHeaterArea = canArea * canHeaterAreaRatio;
+
+%   Resistor
+resThickness = 0.01;            % [m]
+resDensity = 2400;              % [kg/m3]
+resHeatCapacity = 1085          % [kJ/kgC]
+resBaseArea = ((canD/2 + resThickness)^2 - (canD/2)^2)*pi;
+resVolume = resBaseArea * canHeaterAreaRatio * canH;
+resSurfaceArea = 2 * resBaseArea + (pi * (canD/2 + resThickness)^2) * canHeaterAreaRatio * canH;
+
+C_TR = resVolume * resDensity * resHeatCapacity;        % [J/C]
 
 k_RB = 50;                  % [W/mK]
 A_RB = canHeaterArea;       % [m^2]
 dx_RB = canT;               % [m]
 Rk_RB = dx_RB/(k_RB * A_RB);
 
+hc_A = 10.45;               % [Estimate]
+
 %   Resistor to Amb [Convection]
-canAirArea = (pi * canD^2)/4; % + canArea * (1 - resistorCanAreaRatio) This is insulated so no effect
-Rc_RA = 0.01;
+Rc_RA = 1/(hc_A * resSurfaceArea);
 
 %   Beans to Amb    [Convection]
-hc_BA = 10;                         % [Estimate]
-A_BA = pi * ((canD/2) - canT)^2;
-Rc_BA = 1/(hc_BA * A_BA);
+Rc_BA = 1/(hc_A * beanSurfaceArea);
 
 % Ambient Temperature
 T_A = 20;               % [C]
 
 ICB = [T_A
        T_A];
-
 
 %%  Define Bean Heater State Space Matrix
 AB = [-(1/Rk_RB + 1/Rc_RA)/C_TR   1/(Rk_RB * C_TR)      
