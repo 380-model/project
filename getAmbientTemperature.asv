@@ -1,0 +1,11 @@
+function [ ambientTemperature ] = getAmbientTemperature( month )
+%getAmbientTemperature returns the ambient temperature for the month
+%   The month is 1 to 12 with decimals inbetween (ex 3.5 is 15th of March)
+    
+    % Location: Prince George
+    averageTemperature = 4.025
+    
+    
+    ambientTemperature = (sin(((month-1)/13) * 2 * pi - pi/2) + 1)/2;
+end
+
