@@ -1,4 +1,4 @@
-function [yH, yO, yB] = energyConsumptionLinear(P_O0, P_H0, dt, maxtime)
+function [yH, yO, yB] = energyConsumption(P_O0, P_H0, dt, maxtime,params)
 % P_O0 = 2.8;       % [atm]
 % P_H0 = 3;       % [atm]
 
@@ -49,39 +49,38 @@ canT = 0.00025;                 % [m]
 %%  Heating Beans State Model Constants
 
 %   Heater Resistance
-R = 1;                  % [IDK]
+R = params.R;                  % [IDK]
 
 %   Beans
-beanVolume = 400/1000000;       % [m^3] - 400mL
-beanDensity = 1082.05;             % [kg/m^3] - Water
-beanSpecificHeat = 4184;        % [J/(kg*K)] - Water
-beanSurfaceArea = pi*(canD/2)^2;
-C_TB = beanVolume * beanDensity * beanSpecificHeat;
+beanVolume = params.beanVolume;       % [m^3] - 400mL
+beanDensity = params.beanDensity;             % [kg/m^3] - Water
+beanSpecificHeat = params.beanSpecificHeat;        % [J/(kg*K)] - Water
+beanSurfaceArea = params.beanSurfaceArea;
+C_TB = params.C_TB;
 
 
 
 %   Resistor to Beans [Conduction]
 canArea = pi * canD * canH;
-canHeaterAreaRatio = 0.5; % Amount of the can covered by the heater
+canHeaterAreaRatio = params.canHeaterAreaRatio; % Amount of the can covered by the heater
 canHeaterArea = canArea * canHeaterAreaRatio;
 
 %   Resistor
-resThickness = 0.01;            % [m]
-resDensity = 2400;              % [kg/m3]
-resHeatCapacity = 1085;          % [kJ/kgC]
+resThickness = params.resThickness;            % [m]
+resDensity = params.resDensity;              % [kg/m3]
+resHeatCapacity = params.resHeatCapacity;         % [kJ/kgC]
 resBaseArea = ((canD/2 + resThickness)^2 - (canD/2)^2)*pi;
 resVolume = resBaseArea * canHeaterAreaRatio * canH;
 resSurfaceArea = 2 * resBaseArea + canHeaterAreaRatio * canH;
 
-C_TR = resVolume * resDensity * resHeatCapacity;        % [J/C]
+C_TR = params.C_TR;        % [J/C]
 
-
-k_RB = 50;                  % [W/mK]
-A_RB = canHeaterArea;       % [m^2]
+k_RB = params.k_RB;                  % [W/mK]
+A_RB = params.canHeaterArea;       % [m^2]
 dx_RB = canT;               % [m]
 Rk_RB = dx_RB/(k_RB * A_RB);
 
-hc_A = 10.45;               % [Estimate]
+hc_A = params.hc_A;               % [Estimate]
 
 %   Resistor to Amb [Convection]
 Rc_RA = 1/(hc_A * resSurfaceArea);
@@ -90,7 +89,7 @@ Rc_RA = 1/(hc_A * resSurfaceArea);
 Rc_BA = 1/(hc_A * beanSurfaceArea);
 
 % Ambient Temperature
-T_A = 20;               % [C]
+T_A = params.T_A;               % [C]
 
 ICB = [T_A
        T_A];

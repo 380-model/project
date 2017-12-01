@@ -1,33 +1,21 @@
-function [yH, yO, yB] = energyConsumptionLinear(P_O0, P_H0, dt, maxtime)
+function [yH, yO, yB] = energyConsumptionODE(P_O0, P_H0, dt, maxtime,params)
+% release
 % P_O0 = 2.8;       % [atm]
 % P_H0 = 3;       % [atm]
 
 %%  Define Run Time
 time = 0:dt:maxtime;
-uH = zeros(length(time), 1);
-uO = zeros(length(time), 1);
 
 %%  Model Parameter Constants
 %%  Tank Gas Flow Model
 %   Hydrogen
-RfH = 5002.51;   % [atm s/m^3]
-IfH = 107856;    % [kg/m^4]
-VH = 0.04;       % [m^3]
-kH = 1.405;      % unitless
-PH = P_H0/4;     % [atm]
-CfH = VH/(PH*kH);% [m^3/atm]
 QH = 0;          % [J]
 
 ICH = [QH
        P_H0];  
   
 %   Oxygen
-RfO = 11596.4;   % [atm s/m^3]
-IfO = 1714800;   % [kg/m^4]
-VO = 0.04;       % [m^3]
-kO = 1.395;      % unitless
-PO = P_O0/4;     % [atm]
-CfO = VO/(PO*kO);% [m^3/atm]
+
 QO = 0;          % [J]
 
 ICO = [QO
@@ -43,45 +31,45 @@ psi = 14;               % saturated
 i_max = 2;              % max current density [A/cm2]
 i = 1.5;                % Current Pull [A/cm2]
 %   Can
-canD = 0.0682625;               % [m]
-canH = 0.123825;                % [m]
-canT = 0.00025;                 % [m]
+canD = params.canD;              % [m]
+canH = params.canH;                % [m]
+canT = params.canT;                 % [m]
+
 %%  Heating Beans State Model Constants
 
 %   Heater Resistance
-R = 1;                  % [IDK]
+R = params.R;                  % [IDK]
 
 %   Beans
-beanVolume = 400/1000000;       % [m^3] - 400mL
-beanDensity = 1082.05;             % [kg/m^3] - Water
-beanSpecificHeat = 4184;        % [J/(kg*K)] - Water
-beanSurfaceArea = pi*(canD/2)^2;
-C_TB = beanVolume * beanDensity * beanSpecificHeat;
+beanVolume = params.beanVolume;       % [m^3] - 400mL
+beanDensity = params.beanDensity;             % [kg/m^3] - Water
+beanSpecificHeat = params.beanSpecificHeat;        % [J/(kg*K)] - Water
+beanSurfaceArea = params.beanSurfaceArea;
+C_TB = params.C_TB;
 
 
 
 %   Resistor to Beans [Conduction]
 canArea = pi * canD * canH;
-canHeaterAreaRatio = 0.5; % Amount of the can covered by the heater
+canHeaterAreaRatio = params.canHeaterAreaRatio; % Amount of the can covered by the heater
 canHeaterArea = canArea * canHeaterAreaRatio;
 
 %   Resistor
-resThickness = 0.01;            % [m]
-resDensity = 2400;              % [kg/m3]
-resHeatCapacity = 1085;          % [kJ/kgC]
+resThickness = params.resThickness;            % [m]
+resDensity = params.resDensity;              % [kg/m3]
+resHeatCapacity = params.resHeatCapacity;         % [kJ/kgC]
 resBaseArea = ((canD/2 + resThickness)^2 - (canD/2)^2)*pi;
 resVolume = resBaseArea * canHeaterAreaRatio * canH;
 resSurfaceArea = 2 * resBaseArea + canHeaterAreaRatio * canH;
 
-C_TR = resVolume * resDensity * resHeatCapacity;        % [J/C]
+C_TR = params.C_TR;        % [J/C]
 
-
-k_RB = 50;                  % [W/mK]
-A_RB = canHeaterArea;       % [m^2]
+k_RB = params.k_RB;                  % [W/mK]
+A_RB = params.canHeaterArea;       % [m^2]
 dx_RB = canT;               % [m]
 Rk_RB = dx_RB/(k_RB * A_RB);
 
-hc_A = 10.45;               % [Estimate]
+hc_A = params.hc_A;               % [Estimate]
 
 %   Resistor to Amb [Convection]
 Rc_RA = 1/(hc_A * resSurfaceArea);
@@ -90,41 +78,11 @@ Rc_RA = 1/(hc_A * resSurfaceArea);
 Rc_BA = 1/(hc_A * beanSurfaceArea);
 
 % Ambient Temperature
-T_A = 20;               % [C]
+T_A = params.T_A;               % [C]
 
 ICB = [T_A
        T_A];
 
-%%  Define Hydrogen State Space Matrix
-AH = [-RfH/IfH     1/IfH
-     -1/CfH      0   ];
- 
-BH = [0
-      0];
-  
-CH = [1 0
-      0 1];
- 
-DH = [0
-      0];
-  
-sysH = ss(AH, BH, CH, DH);
- 
-%%  Define Hydrogen State Space Matrix
-AO = [-RfO/IfO     1/IfO
-      -1/CfO       0    ];
- 
-BO = [0
-      0];
-  
-CO = [1 0
-      0 1];
- 
-DO = [0
-      0];
-  
- sysO = ss(AO, BO, CO, DO);
- 
 %%  Define Bean Heater State Space Matrix
 AB = [-(1/Rk_RB + 1/Rc_RA)/C_TR   1/(Rk_RB * C_TR)      
       1/(Rk_RB * C_TB)           -(1/Rk_RB + 1/Rc_BA)/C_TB];
@@ -142,8 +100,8 @@ sysB = ss(AB, BB, CB, DB);
 
 %%  Run Simulation
 
-yH = lsim(sysH, uH, time, ICH);
-yO = lsim(sysO, uO, time, ICO);
+[tH, yH] = ode45(@ODEfunctionH, time, ICH); 
+[tO, yO] = ode45(@ODEfunctionO, time, ICO);
 
 for w = 1:length(time)
     PO2 = yO(w,2);
@@ -189,7 +147,7 @@ end
 %%  Bean Simulator
 yB = lsim(sysB, uB, time, ICB);
 
-figure('NumberTitle', 'off', 'Name', 'Linear Consumption Results')
+figure('NumberTitle', 'off', 'Name', 'Nonlinear Consumption Results')
 
 subplot(2,2,1)
 plot(time(1,:),yH(:,2))
@@ -219,3 +177,25 @@ xlabel('Time [s]');
 ylabel('Temperature [C]');
 grid on
 end
+function dvariables = ODEfunctionH(t, y)
+    RfH = 5002.51;   % [atm s/m^3]
+    IfH = 107856;    % [kg/m^4]
+    VH = 0.04;       % [m^3]
+    kH = 1.405;      % unitless
+
+    dvariables = zeros(2,1);
+    dvariables(1) = -(RfH*y(1)/IfH) + y(2)/IfH;
+    dvariables(2) = -y(1)*kH*y(2)/VH;
+end 
+
+function dvariables = ODEfunctionO(t, y)
+    RfO = 11596.74;   % [atm s/m^3]
+    IfO = 1714800;   % [kg/m^4]
+    VO = 0.04;       % [m^3]
+    kO = 1.395;      % unitless
+
+    dvariables = zeros(2,1);
+    dvariables(1) = -(RfO*y(1)/IfO) + y(2)/IfO;
+    dvariables(2) = -y(1)*kO*y(2)/VO;
+end 
+
